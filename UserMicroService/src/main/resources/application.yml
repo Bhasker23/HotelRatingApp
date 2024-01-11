@@ -17,3 +17,43 @@ spring:
 
   config:
     import: configserver:http://localhost:8085
+
+# actuator configuration
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+  endpoint:
+     health:
+       show-details: always
+
+# Resilience 4j config
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      ratingHotelBreaker :
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 6s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+
+  retry:
+    instances:
+      ratingHotelBreaker:
+        maxAttempts: 3
+        waitDuration: 5s
+
+
+
